@@ -35,6 +35,12 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <!-- Day 02: 渲染第一个三角形 -->
+        <activity
+            android:name=".day02.Day02Activity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
