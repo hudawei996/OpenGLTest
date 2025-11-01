@@ -8,6 +8,8 @@ import com.example.openglstudy.adapter.DayAdapter
 import com.example.openglstudy.day01.Day01Activity
 import com.example.openglstudy.day02.Day02Activity
 import com.example.openglstudy.day03.Day03Activity
+import com.example.openglstudy.day04.Day04Activity
+import com.example.openglstudy.day05.Day05Activity
 import com.example.openglstudy.model.DayItem
 
 /**
@@ -35,8 +37,8 @@ class MainActivity : AppCompatActivity() {
             DayItem(1, "OpenGL ES 入门与环境搭建", "理解 OpenGL ES 的基本概念，掌握 GLSurfaceView 的使用", Day01Activity::class.java),
             DayItem(2, "渲染第一个三角形", "学习顶点数据和着色器，渲染第一个图形", Day02Activity::class.java),
             DayItem(3, "着色器基础 - GLSL 语言", "深入学习 GLSL 语法，掌握 uniform、attribute、varying", Day03Activity::class.java),
-            DayItem(4, "纹理贴图基础", "学习纹理加载和映射，将图片渲染到 OpenGL", MainActivity::class.java),
-            DayItem(5, "纹理变换与矩阵操作", "掌握矩阵变换，实现图片的旋转、缩放、平移", MainActivity::class.java),
+            DayItem(4, "纹理贴图基础", "学习纹理加载和映射，将图片渲染到 OpenGL", Day04Activity::class.java),
+            DayItem(5, "纹理变换与矩阵操作", "掌握矩阵变换，实现图片的旋转、缩放、平移", Day05Activity::class.java),
             DayItem(6, "EGL 与 GLSurfaceView 深入", "理解 EGL 上下文，掌握渲染模式和线程管理", MainActivity::class.java),
             DayItem(7, "FBO（帧缓冲对象）", "学习离屏渲染，实现多通道渲染效果", MainActivity::class.java),
             DayItem(8, "多重纹理与混合", "掌握多纹理使用和混合模式", MainActivity::class.java),

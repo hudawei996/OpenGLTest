@@ -47,6 +47,18 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <!-- Day 04: 纹理贴图基础 -->
+        <activity
+            android:name=".day04.Day04Activity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Day 05: 纹理变换与矩阵操作 -->
+        <activity
+            android:name=".day05.Day05Activity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
