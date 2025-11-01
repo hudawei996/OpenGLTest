@@ -41,6 +41,12 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <!-- Day 03: 着色器基础 - GLSL 语言 -->
+        <activity
+            android:name=".day03.Day03Activity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
