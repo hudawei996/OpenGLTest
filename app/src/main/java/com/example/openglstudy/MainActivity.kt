@@ -15,6 +15,7 @@ import com.example.openglstudy.day07.Day07Activity
 import com.example.openglstudy.day08.Day08Activity
 import com.example.openglstudy.day09.Day09Activity
 import com.example.openglstudy.day10.Day10Activity
+import com.example.openglstudy.day11.Day11Activity
 import com.example.openglstudy.model.DayItem
 
 /**
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             DayItem(8, "多重纹理与混合", "掌握多纹理使用和混合模式", Day08Activity::class.java),
             DayItem(9, "CameraX 基础集成", "集成 CameraX，实现相机预览功能", Day09Activity::class.java),
             DayItem(10, "相机预览与 OpenGL 结合", "使用 SurfaceTexture 获取相机数据并渲染", Day10Activity::class.java),
-            DayItem(11, "实时滤镜效果", "实现灰度、复古、暖色调等滤镜效果", MainActivity::class.java),
+            DayItem(11, "实时滤镜效果", "实现灰度、复古、暖色调等滤镜效果", Day11Activity::class.java),
             DayItem(12, "美颜算法 - 磨皮", "学习双边滤波算法，实现磨皮效果", MainActivity::class.java),
             DayItem(13, "美颜算法 - 美白与瘦脸", "实现美白和局部扭曲变形效果", MainActivity::class.java),
             DayItem(14, "综合项目整合与性能优化", "整合所有效果，优化性能，项目总结", MainActivity::class.java)
