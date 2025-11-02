@@ -11,7 +11,10 @@
       "Bash(tree:*)",
       "WebSearch",
       "Bash(./gradlew build:*)",
-      "Bash(./gradlew:*)"
+      "Bash(./gradlew:*)",
+      "Bash(adb devices:*)",
+      "Bash(adb shell:*)",
+      "Bash(adb logcat:*)"
     ],
     "deny": [],
     "ask": []

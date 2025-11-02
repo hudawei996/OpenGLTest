@@ -1,10 +1,14 @@
 package com.example.openglstudy.utils
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
 import android.opengl.GLES20
 import android.opengl.GLUtils
 import android.util.Log
+import androidx.core.content.ContextCompat
 
 /**
  * 纹理加载辅助类
@@ -12,6 +16,50 @@ import android.util.Log
 object TextureHelper {
 
     private const val TAG = "TextureHelper"
+
+    /**
+     * 从资源加载 Bitmap
+     * 支持普通图片资源和 XML Drawable 资源
+     */
+    private fun loadBitmapFromResource(context: Context, resourceId: Int): Bitmap? {
+        return try {
+            // 首先尝试直接解码位图资源
+            val options = BitmapFactory.Options().apply {
+                inScaled = false  // 不缩放
+            }
+            var bitmap = BitmapFactory.decodeResource(
+                context.resources,
+                resourceId,
+                options
+            )
+
+            // 如果失败，尝试作为 Drawable 加载
+            if (bitmap == null) {
+                Log.d(TAG, "BitmapFactory failed, trying as Drawable")
+                val drawable = ContextCompat.getDrawable(context, resourceId)
+                if (drawable != null) {
+                    // 如果是 BitmapDrawable，直接获取 bitmap
+                    if (drawable is BitmapDrawable) {
+                        bitmap = drawable.bitmap
+                    } else {
+                        // 其他 Drawable 类型，渲染到 Bitmap
+                        val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else 512
+                        val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else 512
+                        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                        val canvas = Canvas(bitmap)
+                        drawable.setBounds(0, 0, canvas.width, canvas.height)
+                        drawable.draw(canvas)
+                        Log.d(TAG, "Drawable rendered to bitmap: ${width}x${height}")
+                    }
+                }
+            }
+
+            bitmap
+        } catch (e: Exception) {
+            Log.e(TAG, "Error loading bitmap from resource $resourceId", e)
+            null
+        }
+    }
 
     /**
      * 从资源文件加载纹理
@@ -30,20 +78,15 @@ object TextureHelper {
         }
 
         // 2. 加载 Bitmap
-        val options = BitmapFactory.Options().apply {
-            inScaled = false  // 不缩放
-        }
-        val bitmap = BitmapFactory.decodeResource(
-            context.resources,
-            resourceId,
-            options
-        )
+        val bitmap = loadBitmapFromResource(context, resourceId)
 
         if (bitmap == null) {
-            Log.e(TAG, "Error decoding bitmap from resource $resourceId")
+            Log.e(TAG, "Error loading bitmap from resource $resourceId")
             GLES20.glDeleteTextures(1, textureIds, 0)
             return 0
         }
+
+        Log.d(TAG, "Bitmap loaded: ${bitmap.width}x${bitmap.height}")
 
         // 3. 绑定纹理
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[0])
