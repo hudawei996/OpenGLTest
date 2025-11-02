@@ -94,7 +94,7 @@ class Day05Renderer(private val context: Context) : GLSurfaceView.Renderer {
         uMatrixLocation = GLES20.glGetUniformLocation(program, "uMatrix")
 
         // 加载纹理
-        textureId = TextureHelper.loadTexture(context, R.drawable.sample_image)
+        textureId = TextureHelper.loadTexture(context, R.mipmap.icon_test)
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
