@@ -95,6 +95,12 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <!-- Day 10: 相机预览与 OpenGL 结合 -->
+        <activity
+            android:name=".day10.Day10Activity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
