@@ -1,9 +1,13 @@
 package com.example.openglstudy.day07
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.util.Log
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.openglstudy.R
 import com.example.openglstudy.utils.TextureHelper
 import java.nio.ByteBuffer
@@ -137,14 +141,14 @@ class Day07Renderer(private val context: Context) : GLSurfaceView.Renderer {
 
     // 全屏四边形顶点（用于渲染纹理）
     private val quadVertices = floatArrayOf(
-        // 位置          纹理坐标（Y 轴翻转以修正图片显示）
-        -1f,  1f, 0f,   0f, 0f,  // 左上
-        -1f, -1f, 0f,   0f, 1f,  // 左下
-         1f,  1f, 0f,   1f, 0f,  // 右上
+        // 位置          纹理坐标
+        -1f,  1f, 0f,   0f, 1f,  // 左上
+        -1f, -1f, 0f,   0f, 0f,  // 左下
+         1f,  1f, 0f,   1f, 1f,  // 右上
 
-        -1f, -1f, 0f,   0f, 1f,  // 左下
-         1f, -1f, 0f,   1f, 1f,  // 右下
-         1f,  1f, 0f,   1f, 0f   // 右上
+        -1f, -1f, 0f,   0f, 0f,  // 左下
+         1f, -1f, 0f,   1f, 0f,  // 右下
+         1f,  1f, 0f,   1f, 1f   // 右上
     )
 
     private lateinit var vertexBuffer: FloatBuffer
@@ -165,6 +169,13 @@ class Day07Renderer(private val context: Context) : GLSurfaceView.Renderer {
 
     // 原始纹理
     private var originalTextureId: Int = 0
+
+    // 用于从 Glide 接收 Bitmap
+    @Volatile
+    private var pendingBitmap: Bitmap? = null
+
+    @Volatile
+    private var needUpdateTexture = false
 
     // 当前滤镜类型
     @Volatile
@@ -212,9 +223,27 @@ class Day07Renderer(private val context: Context) : GLSurfaceView.Renderer {
         uTexelSizeLocation = GLES20.glGetUniformLocation(filterProgram, "uTexelSize")
         Log.d(TAG, "onSurfaceCreated: uFilterType=$uFilterTypeLocation, uTexelSize=$uTexelSizeLocation")
 
-        // 加载原始纹理
-        originalTextureId = TextureHelper.loadTexture(context, R.mipmap.icon_test)
-        Log.d(TAG, "onSurfaceCreated: 原始纹理加载完成，textureId=$originalTextureId")
+        // 使用 Glide 加载图片（会自动处理 EXIF 旋转信息）
+        loadImageWithGlide()
+    }
+
+    /**
+     * 使用 Glide 加载图片
+     * Glide 会自动处理 EXIF 旋转信息，确保 Bitmap 方向正确
+     */
+    private fun loadImageWithGlide() {
+        Log.d(TAG, "loadImageWithGlide: 开始使用 Glide 加载图片")
+        Glide.with(context)
+            .asBitmap()
+            .load(R.mipmap.icon_test)
+            .into(object : SimpleTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    Log.d(TAG, "Glide 加载成功: ${resource.width}x${resource.height}")
+                    // 保存 Bitmap 并标记需要更新纹理
+                    pendingBitmap = resource
+                    needUpdateTexture = true
+                }
+            })
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -230,6 +259,29 @@ class Day07Renderer(private val context: Context) : GLSurfaceView.Renderer {
     }
 
     override fun onDrawFrame(gl: GL10?) {
+        // 检查是否有新的 Bitmap 需要创建纹理
+        if (needUpdateTexture && pendingBitmap != null) {
+            // 删除旧纹理（如果存在）
+            if (originalTextureId != 0) {
+                GLES20.glDeleteTextures(1, intArrayOf(originalTextureId), 0)
+            }
+
+            // 从 Bitmap 创建新纹理
+            originalTextureId = TextureHelper.loadTexture(pendingBitmap)
+            Log.d(TAG, "onDrawFrame: 纹理创建完成，textureId=$originalTextureId")
+
+            // 重置标志
+            needUpdateTexture = false
+            // 注意：不要在这里回收 Bitmap，因为 Glide 会管理它
+        }
+
+        // 只有在纹理加载完成后才渲染
+        if (originalTextureId == 0) {
+            // 纹理还未加载，清屏并返回
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+            return
+        }
+
         // Pass 1: 渲染原图到 FBO
         renderToFBO()
 

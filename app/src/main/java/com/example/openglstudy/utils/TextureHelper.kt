@@ -129,4 +129,61 @@ object TextureHelper {
         Log.d(TAG, "Texture loaded successfully, ID: ${textureIds[0]}")
         return textureIds[0]
     }
+
+    /**
+     * 从 Bitmap 创建纹理
+     * @param bitmap Bitmap 对象（调用者负责管理 Bitmap 的生命周期）
+     * @return 纹理 ID，失败返回 0
+     */
+    fun loadTexture(bitmap: Bitmap?): Int {
+        if (bitmap == null || bitmap.isRecycled) {
+            Log.e(TAG, "Invalid bitmap")
+            return 0
+        }
+
+        val textureIds = IntArray(1)
+
+        // 1. 生成纹理 ID
+        GLES20.glGenTextures(1, textureIds, 0)
+        if (textureIds[0] == 0) {
+            Log.e(TAG, "Error generating texture")
+            return 0
+        }
+
+        Log.d(TAG, "Creating texture from bitmap: ${bitmap.width}x${bitmap.height}")
+
+        // 2. 绑定纹理
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[0])
+
+        // 3. 设置纹理参数
+        GLES20.glTexParameteri(
+            GLES20.GL_TEXTURE_2D,
+            GLES20.GL_TEXTURE_MIN_FILTER,
+            GLES20.GL_LINEAR
+        )
+        GLES20.glTexParameteri(
+            GLES20.GL_TEXTURE_2D,
+            GLES20.GL_TEXTURE_MAG_FILTER,
+            GLES20.GL_LINEAR
+        )
+        GLES20.glTexParameteri(
+            GLES20.GL_TEXTURE_2D,
+            GLES20.GL_TEXTURE_WRAP_S,
+            GLES20.GL_CLAMP_TO_EDGE
+        )
+        GLES20.glTexParameteri(
+            GLES20.GL_TEXTURE_2D,
+            GLES20.GL_TEXTURE_WRAP_T,
+            GLES20.GL_CLAMP_TO_EDGE
+        )
+
+        // 4. 上传纹理数据
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
+
+        // 5. 解绑纹理
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
+
+        Log.d(TAG, "Texture created successfully from bitmap, ID: ${textureIds[0]}")
+        return textureIds[0]
+    }
 }
