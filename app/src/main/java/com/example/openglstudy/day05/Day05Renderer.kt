@@ -112,6 +112,12 @@ class Day05Renderer(private val context: Context) : GLSurfaceView.Renderer {
     override fun onDrawFrame(gl: GL10?) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
+        // 旋转动画：持续累加旋转角度
+        rotation += 1.0f
+        if (rotation >= 360f) {
+            rotation = 0f
+        }
+
         // 构建模型矩阵（SRT 顺序：缩放-旋转-平移）
         Matrix.setIdentityM(modelMatrix, 0)
         Matrix.translateM(modelMatrix, 0, translateX, translateY, 0f)
